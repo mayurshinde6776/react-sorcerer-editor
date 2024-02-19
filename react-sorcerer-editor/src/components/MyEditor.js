@@ -34,7 +34,24 @@ function MyEditor() {
           return 'handled';
         }
 
-       
+        // Check if the line starts with '*' and the cursor is at the second position
+        if (blockText.startsWith('*') && startOffset === 1) {
+            const inlineStyle = contentState
+              .getBlockForKey(startKey)
+              .getInlineStyleAt(0);
+  
+            const newContentState = Modifier.setInlineStyle(
+              contentState,
+              selectionState.merge({
+                anchorOffset: 0,
+                focusOffset: blockText.indexOf(' ') + 1,
+              }),
+              inlineStyle.has('BOLD') ? {} : { BOLD: true }
+            );
+  
+            setEditorState(EditorState.push(editorState, newContentState, 'change-inline-style'));
+            return 'handled';
+          }
       }
 
       const newState = RichUtils.handleKeyCommand(editorState, command);
