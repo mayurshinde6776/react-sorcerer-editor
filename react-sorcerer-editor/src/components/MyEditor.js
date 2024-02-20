@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Editor, EditorState, Modifier, convertToRaw } from 'draft-js';
+import { Editor, EditorState, Modifier,convertFromRaw,  convertToRaw } from 'draft-js';
+import Title from './Title';
+import Button from './Button';
 
 const MyEditor = () => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [editorState, setEditorState] = useState(() => {
+    const savedContent = localStorage.getItem('editorContent');
+    return savedContent
+      ? EditorState.createWithContent(convertFromRaw(JSON.parse(savedContent)))
+      : EditorState.createEmpty();
+  });
 
   const handleInputChange = (newEditorState) => {
     setEditorState(newEditorState);
@@ -130,7 +137,22 @@ const handleBeforeInput = (chars, editorState) => {
   }, [editorState]);
 
   return (
-    <div style={{border:'solid 2px #87d3f8', height:'300px'}}>
+<div className="container">
+      <div className="row justify-content-center align-items-center mt-5">
+        <div className="col">
+          <Title />
+        </div>
+        <div className="col-auto">
+        <Button
+        label="Save"
+        editorState={editorState}
+        setEditorState={setEditorState}
+      />
+        </div>
+      </div>
+      <div className="row mt-3">
+        <div className="col">
+        <div style={{border:'solid 2px #87d3f8', height:'300px'}}>
       <Editor
         editorState={editorState}
         onChange={handleInputChange}
@@ -138,6 +160,11 @@ const handleBeforeInput = (chars, editorState) => {
         customStyleMap={customStyleMap}
       />
     </div>
+        </div>
+      </div>
+    </div>
+
+    
   );
 };
 
